@@ -31,27 +31,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Bitmap bm = getBitmapFromAsset("face_test2.jpg");
+
          imageView = (ImageView) findViewById(R.id.imageFace);
+        button = findViewById(R.id.btnTest);
+
+        Bitmap bm = getBitmapFromAsset("face_test2.jpg");
         imageView.setImageBitmap(bm);
 
         Paint boxPaint = new Paint();
         boxPaint.setStrokeWidth(5);
         boxPaint.setColor(Color.RED);
         boxPaint.setStyle(Paint.Style.STROKE);
-
-        final  Canvas canvas = new Canvas(bm);
+        Bitmap tempbm = Bitmap.createBitmap(bm.getWidth(),bm.getHeight(),Bitmap.Config.RGB_565);
+        final  Canvas canvas = new Canvas(tempbm);
         canvas.drawBitmap(bm,0,0,null);
-         button = findViewById(R.id.btnTest);
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 FaceDetector detector = new FaceDetector.Builder(getApplicationContext())
-                        .setTrackingEnabled(true)
+                        .setTrackingEnabled(false)
                         .setLandmarkType(FaceDetector.ALL_LANDMARKS)
                         .setMode(FaceDetector.FAST_MODE)
                         .build();
                 if (!detector.isOperational()) {
-                    Toast.makeText(MainActivity.this, "face detector needs to set uo please Restart your app", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Face Detector won't work your device", Toast.LENGTH_SHORT).show();
                 return;
                 }
                 Frame frame = new Frame.Builder().setBitmap(bm).build();
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     RectF rectF = new RectF(x1,y1,x2,y2);
                     canvas.drawRoundRect(rectF, 2, 2, boxPaint);
                 }
-                imageView.setImageDrawable(new BitmapDrawable(getResources(), bm));
+                imageView.setImageDrawable(new BitmapDrawable(getResources(), tempbm));
             }
         });
     }
